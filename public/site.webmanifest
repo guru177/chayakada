@@ -1,0 +1,25 @@
+{
+  "name": "Kattanchaya",
+  "short_name": "കട്ടൻചായ",
+  "description": "Vintage Kerala tea shop and free chayakada ambience maker — rain, radio, kettle and old Malayalam songs.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ead9b8",
+  "theme_color": "#1E3D2F",
+  "lang": "ml",
+  "dir": "ltr",
+  "categories": ["food", "music", "lifestyle"],
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ]
+}

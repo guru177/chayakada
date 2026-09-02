@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { Mixer } from "../components/Mixer";
+import { Seo } from "../components/Seo";
 import { useAudio } from "../context";
+import { POMO_DESCRIPTION, POMO_TITLE } from "../seo";
 
 type Mode = "focus" | "break" | "long";
 
@@ -49,6 +51,7 @@ export function Pomodoro() {
 
   return (
     <div className="pomodoro">
+      <Seo title={POMO_TITLE} description={POMO_DESCRIPTION} path="/pomodoro" />
       <Link className="back-kada" to="/">
         ← Chai Kada
       </Link>

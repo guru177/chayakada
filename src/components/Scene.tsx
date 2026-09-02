@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Pic } from "./Pic";
 import { greetingLine } from "../data";
 import { useAudio } from "../context";
 
@@ -17,7 +18,7 @@ export function Scene({ onOrder }: { onOrder: () => void }) {
 
   return (
     <div className="scene" aria-label="Kerala tea stall scene">
-      <img className="scene-img" src="/hero.png" alt="Vintage Kerala tea stall interior" />
+      <Pic className="scene-img" src="/hero.jpg" alt="Vintage Kerala tea stall interior" eager width={1408} height={768} sizes="100vw" />
       <div className="vignette" />
       <div className="scene-corner" />
       <div className="shop-sign">

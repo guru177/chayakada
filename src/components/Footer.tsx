@@ -1,3 +1,5 @@
+import { Pic } from "./Pic";
+
 const PERKS = [
   {
     title: "TRADITIONAL RECIPES",
@@ -82,10 +84,13 @@ export function Footer() {
       </div>
 
       <div className="foot-main wrap">
-        <img
+        <Pic
           className="foot-parchment"
-          src="/images/footer-parchment.png?v=2"
-          alt="Come, sip and be a part of our story"
+          src="/images/footer-parchment.png"
+          alt="Come, sip and be a part of the Kattanchaya chayakada story"
+          width={426}
+          height={640}
+          sizes="(max-width: 560px) 148px, (max-width: 980px) 168px, (min-width: 1800px) 260px, 220px"
         />
 
         <div className="foot-brand">
@@ -146,13 +151,22 @@ export function Footer() {
             </svg>
             VISIT US
           </div>
-          <p>Kattanchaya Chayakada, Kozhikode, Kerala</p>
+          <address>
+            Kattanchaya Chayakada, Kozhikode, Kerala
+          </address>
           <hr />
           <div className="foot-kicker">OPEN DAILY</div>
           <p>6:00 AM – 9:30 PM</p>
         </div>
 
-        <img className="foot-stamp" src="/images/footer-stamp.png?v=2" alt="" />
+        <Pic
+          className="foot-stamp"
+          src="/images/footer-stamp.png"
+          alt="Vintage Kerala backwaters postage stamp, Kottayam"
+          width={362}
+          height={480}
+          sizes="(max-width: 560px) 96px, (max-width: 980px) 118px, (min-width: 1800px) 188px, 160px"
+        />
       </div>
 
       <p className="foot-copy">© 2024 Kattanchaya Chayakada. All rights reserved.</p>

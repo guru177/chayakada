@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type PointerEvent, type ReactNode } from "react";
 import { PRESETS, SOUND_META, type SoundId } from "../data";
 import { useAudio } from "../context";
+import { Pic } from "./Pic";
 
 const PRESET_ORDER = ["rain", "chai-time", "study", "rain-evening", "night"];
 const TRACK_SECS = 310;
@@ -126,12 +127,12 @@ export function AmbiencePanel() {
     <div className="mix-stage">
       <div className="mix-scrap" aria-hidden="true">
         <span className="mix-scrap-pin" />
-        <img src="/images/mix-scrap.png?v=5" alt="" />
+        <Pic src="/images/mix-scrap.jpg" alt="" width={640} height={960} sizes="280px" />
       </div>
       <div className="mix-polaroid">
         <span className="mix-tape" />
-        <img src="/images/shop-vintage.png" alt="" />
-        <img className="mix-stamp" src="/images/seal-stamp.png" alt="" />
+        <Pic src="/images/shop-vintage.jpg" alt="" width={800} height={1200} sizes="220px" />
+        <Pic className="mix-stamp" src="/images/seal-stamp.jpg" alt="" width={400} height={400} sizes="72px" />
       </div>
 
       <div className="mix-board">
@@ -139,7 +140,7 @@ export function AmbiencePanel() {
         <span className="mix-rivet tr" aria-hidden />
         <span className="mix-rivet bl" aria-hidden />
         <span className="mix-rivet br" aria-hidden />
-        <p className="mix-kicker">CHAYAKADA AMBIENCE MAKER</p>
+        <h2 className="mix-kicker">CHAYAKADA AMBIENCE MAKER</h2>
         <p className="mix-tagline">ചായക്കടയുടെ അന്തരീക്ഷം അനുഭവിക്കൂ</p>
         <p className="mix-sub">Sit back &amp; listen. Mix rain, radio, kettle &amp; old Malayalam songs.</p>
         <div className="mix-presets-label">പ്രീസെറ്റുകൾ · PRESETS</div>
@@ -231,24 +232,37 @@ export function AmbiencePanel() {
                     />
                   ))}
                 </div>
-                <div className="mix-dial-row">
-                  <button
-                    type="button"
-                    className={`mix-onoff ${on ? "is-on" : ""}`}
-                    onClick={() => audio.setVolume(id, on ? 0 : vol > 0.02 ? vol : 0.55)}
-                    aria-pressed={on}
-                    aria-label={on ? "Turn off" : "Turn on"}
-                  >
-                    {on ? "ON" : "OFF"}
-                  </button>
-                  <RotaryKnob
+                <div className="mix-dials">
+                  <div className="mix-dial-row">
+                    <button
+                      type="button"
+                      className={`mix-onoff ${on ? "is-on" : ""}`}
+                      onClick={() => audio.setVolume(id, on ? 0 : vol > 0.02 ? vol : 0.55)}
+                      aria-pressed={on}
+                      aria-label={on ? "Turn off" : "Turn on"}
+                    >
+                      {on ? "ON" : "OFF"}
+                    </button>
+                    <RotaryKnob
+                      value={vol}
+                      active={on}
+                      onChange={(v) => {
+                        audio.setVolume(id, v);
+                      }}
+                    />
+                    <span>{Math.round(vol * 100)}%</span>
+                  </div>
+                  <input
+                    className="mix-dotbar"
+                    type="range"
+                    min={0}
+                    max={1}
+                    step={0.01}
                     value={vol}
-                    active={on}
-                    onChange={(v) => {
-                      audio.setVolume(id, v);
-                    }}
+                    style={{ ["--vol" as string]: `${vol * 100}%` }}
+                    onChange={(e) => audio.setVolume(id, Number(e.target.value))}
+                    aria-label={`${meta.en} volume`}
                   />
-                  <span>{Math.round(vol * 100)}%</span>
                 </div>
               </article>
             );
@@ -326,7 +340,7 @@ export function AmbiencePanel() {
         </div>
 
         <div className="mix-board-foot">
-          <img className="mix-props-img" src="/images/mix-kettle.png" alt="" />
+          <Pic className="mix-props-img" src="/images/mix-kettle.jpg" alt="Brass kettle and a glass of kattan chaya" width={480} height={320} sizes="220px" />
           <p className="mix-phones">
             Put on your headphones. Close your eyes. You are now at Kattanchaya.
             <span aria-hidden> 🎧</span>

@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { GALLERY, GALLERY_FILTERS } from "../data";
+import { Pic } from "./Pic";
 import { sectionLink, useNav } from "../nav.tsx";
 
 export function Gallery() {
@@ -50,14 +51,20 @@ export function Gallery() {
           {shots.map((shot) => (
             <figure className={`gal-shot ${shot.slot}`} key={shot.id}>
               <span className="gal-tape" aria-hidden />
-              <img src={shot.src} alt={shot.alt} />
+              <Pic
+                src={shot.src}
+                alt={shot.alt}
+                width={shot.slot === "g-car" ? 800 : 1200}
+                height={shot.slot === "g-car" ? 1200 : 800}
+                sizes="(max-width: 980px) 48vw, 22vw"
+              />
               {shot.caption ? <figcaption>{shot.caption}</figcaption> : null}
             </figure>
           ))}
         </div>
 
         <div className="gal-foot">
-          <img className="gal-quote" src="/images/gallery/gal-quote.png" alt="" />
+          <Pic className="gal-quote" src="/images/gallery/gal-quote.png" alt="" width={520} height={780} sizes="220px" />
           <div className="gal-cta">
             <svg viewBox="0 0 40 32" aria-hidden>
               <path d="M8 12h8l3-4h10l3 4h0v14H8z" fill="none" stroke="currentColor" strokeWidth="1.6" />
@@ -75,7 +82,7 @@ export function Gallery() {
               <span aria-hidden> ✈</span>
             </Link>
           </div>
-          <img className="gal-seal" src="/images/seal-stamp.png" alt="Traditional Kattanchaya Kerala" />
+          <Pic className="gal-seal" src="/images/seal-stamp.jpg" alt="Traditional Kattanchaya Kerala seal, Est. 1963" width={400} height={400} sizes="150px" />
         </div>
       </div>
     </section>

@@ -7,7 +7,7 @@ export function Header() {
   return (
     <header className="masthead">
       <div className="wrap masthead-inner">
-        <Link to={sectionLink("home")} preventScrollReset className="brand" onClick={() => prepareJump("home")}>
+        <Link to={sectionLink("home")} preventScrollReset className="brand" aria-label="Kattanchaya home" onClick={() => prepareJump("home")}>
           <div className="brand-ml">കട്ടൻചായ</div>
           <div className="brand-est">EST. 1963</div>
           <svg className="brand-cup" viewBox="0 0 32 22" aria-hidden>

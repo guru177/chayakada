@@ -4,7 +4,10 @@ import { Header } from "../components/Header";
 import { AmbiencePanel } from "../components/AmbiencePanel";
 import { Gallery } from "../components/Gallery";
 import { Footer } from "../components/Footer";
+import { Pic } from "../components/Pic";
+import { Seo } from "../components/Seo";
 import { NavProvider, sectionLink, useNav } from "../nav.tsx";
+import { HOME_TITLE, SITE } from "../seo";
 
 export function Home() {
   return (
@@ -20,19 +23,36 @@ function HomePage() {
 
   return (
     <div className="site">
+      <Seo title={HOME_TITLE} description={SITE.description} path="/" />
+      <a className="skip-link" href="#main">
+        Skip to content
+      </a>
       <Header />
 
+      <main id="main">
       <section className="hero" id="home" aria-label="Authentic Kerala tea — vintage chayakada">
         <picture>
           <source
             media="(max-width: 980px) and (orientation: portrait)"
+            type="image/webp"
+            srcSet="/images/hero-bg-mobile.webp"
+          />
+          <source
+            media="(max-width: 980px) and (orientation: portrait)"
             srcSet="/images/hero-bg-mobile.jpg"
           />
+          <source type="image/webp" srcSet="/images/hero-bg.webp" />
           <img
             className="hero-bg"
             src="/images/hero-bg.jpg"
-            alt=""
+            alt="Vintage Kerala chayakada with a glass of kattan chaya on a wooden counter"
+            width={1024}
+            height={523}
+            sizes="100vw"
+            loading="eager"
             fetchPriority="high"
+            decoding="async"
+            draggable={false}
           />
         </picture>
         <div className="hero-copy">
@@ -72,7 +92,9 @@ function HomePage() {
               preventScrollReset
               onClick={() => {
                 prepareJump("ambience");
-                if (!audio.playing) audio.toggle();
+                if (!audio.playing || audio.volumes.music < 0.05) {
+                  void audio.toggleRadio();
+                }
               }}
             >
               {audio.playing ? "ON AIR · MIXER" : "▶ AMBIENCE MAKER"}
@@ -86,10 +108,10 @@ function HomePage() {
           <div className="polaroid">
             <span className="tape" />
             <div className="polaroid-print">
-              <img src="/images/shop-vintage.png" alt="പഴയ കട്ടൻചായ കട" />
+              <Pic src="/images/shop-vintage.jpg" alt="പഴയ കട്ടൻചായ കട, vintage Kerala tea shop" width={800} height={1200} sizes="(max-width: 560px) 220px, (max-width: 1100px) 320px, 28vw" />
             </div>
           </div>
-          <div className="story-copy">
+          <div className="story-copy" lang="ml">
             <div className="eyebrow">നമ്മുടെ കഥ</div>
             <div className="story-rule" aria-hidden />
             <h2>കേരളത്തിലെ ചായയുടെ പാരമ്പര്യം</h2>
@@ -139,10 +161,17 @@ function HomePage() {
       </section>
 
       <section className="menu-board-band" id="menu" aria-label="കട്ടൻചായ ചായക്കട menu board">
-        <img src="/images/menu-board.jpg" alt="കട്ടൻചായ ചായക്കട chalkboard menu, EST. 1963" />
+        <Pic
+          src="/images/menu-board.jpg"
+          alt="കട്ടൻചായ ചായക്കട chalkboard menu, EST. 1963"
+          width={1024}
+          height={682}
+          sizes="100vw"
+        />
       </section>
 
       <Gallery />
+      </main>
       <Footer />
     </div>
   );

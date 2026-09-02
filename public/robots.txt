@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://guru177.github.io/chayakada/sitemap.xml

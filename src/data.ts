@@ -124,11 +124,11 @@ export const PRESETS: {
 ];
 
 export const MENU = [
-  { ml: "കട്ടൻ ചായ", en: "Kattan Chaya", desc: "Strong black tea, no milk, no sugar.", price: "₹15", img: "/images/menu-kattan.png" },
-  { ml: "ബൺ", en: "Bun", desc: "Fresh from the oven every morning.", price: "₹12", img: "/images/menu-bun.png" },
-  { ml: "പഴം പൊരി", en: "Pazham Pori", desc: "Crispy ripe banana fritters.", price: "₹20", img: "/images/menu-pazham.png" },
-  { ml: "ഓംലെറ്റ്", en: "Omelette", desc: "Fluffy, peppered, made to order.", price: "₹25", img: "/images/menu-omelette.png" },
-  { ml: "നാരങ്ങ വെള്ളം", en: "Naaranga Vellam", desc: "Fresh lime, salt, soda if you ask.", price: "₹15", img: "/images/menu-lime.png" },
+  { ml: "കട്ടൻ ചായ", en: "Kattan Chaya", desc: "Strong black tea, no milk, no sugar.", price: "₹15", img: "/images/menu-kattan.jpg" },
+  { ml: "ബൺ", en: "Bun", desc: "Fresh from the oven every morning.", price: "₹12", img: "/images/menu-bun.jpg" },
+  { ml: "പഴം പൊരി", en: "Pazham Pori", desc: "Crispy ripe banana fritters.", price: "₹20", img: "/images/menu-pazham.jpg" },
+  { ml: "ഓംലെറ്റ്", en: "Omelette", desc: "Fluffy, peppered, made to order.", price: "₹25", img: "/images/menu-omelette.jpg" },
+  { ml: "നാരങ്ങ വെള്ളം", en: "Naaranga Vellam", desc: "Fresh lime, salt, soda if you ask.", price: "₹15", img: "/images/menu-lime.jpg" },
 ];
 
 export const GALLERY_FILTERS = [
@@ -141,16 +141,16 @@ export const GALLERY_FILTERS = [
 ] as const;
 
 export const GALLERY = [
-  { id: "kada", slot: "g-kada", tag: "kada", src: "/images/gallery/gal-kada.jpg", alt: "ചായക്കടയിലെ ഓർമ്മ", caption: "" },
-  { id: "alleppey", slot: "g-alleppey", tag: "kerala", src: "/images/gallery/gal-alleppey.jpg", alt: "ആലപ്പുഴ ഹൗസ്‌ബോട്ട്", caption: "Alleppey, 1988" },
-  { id: "car", slot: "g-car", tag: "old", src: "/images/gallery/gal-ambassador.jpg", alt: "മഴയത്ത് ആംബാസഡർ", caption: "" },
-  { id: "hills", slot: "g-hills", tag: "kerala", src: "/images/gallery/gal-hills.jpg", alt: "തേയിലത്തോട്ടം", caption: "" },
-  { id: "cinema", slot: "g-cinema", tag: "cinema", src: "/images/gallery/gal-cinema.jpg", alt: "പഴയ സിനിമ പ്രൊജക്ടർ", caption: "" },
-  { id: "snacks", slot: "g-snacks", tag: "life", src: "/images/gallery/gal-snacks.jpg", alt: "ചായയും പഴംപൊരിയും", caption: "" },
-  { id: "ksrtc", slot: "g-ksrtc", tag: "old", src: "/images/gallery/gal-ksrtc.jpg", alt: "കെഎസ്ആർടിസി ബസ്", caption: "KSRTC — 1992" },
-  { id: "counter", slot: "g-counter", tag: "kada", src: "/images/gallery/gal-counter.jpg", alt: "ചായക്കട കൗണ്ടർ", caption: "" },
-  { id: "talk", slot: "g-talk", tag: "kada", src: "/images/gallery/gal-talk.jpg", alt: "കടയിലെ സംസാരം", caption: "" },
-  { id: "cycle", slot: "g-cycle", tag: "life", src: "/images/gallery/gal-cycle.jpg", alt: "കായലോരം സൈക്കിൾ", caption: "" },
+  { id: "kada", slot: "g-kada", tag: "kada", src: "/images/gallery/gal-kada.jpg", alt: "Vintage Kerala chayakada interior — കട്ടൻചായ കട", caption: "" },
+  { id: "alleppey", slot: "g-alleppey", tag: "kerala", src: "/images/gallery/gal-alleppey.jpg", alt: "Alleppey houseboat, Kerala, 1988", caption: "Alleppey, 1988" },
+  { id: "car", slot: "g-car", tag: "old", src: "/images/gallery/gal-ambassador.jpg", alt: "Ambassador car in monsoon rain, Kerala", caption: "" },
+  { id: "hills", slot: "g-hills", tag: "kerala", src: "/images/gallery/gal-hills.jpg", alt: "Kerala tea estate hills", caption: "" },
+  { id: "cinema", slot: "g-cinema", tag: "cinema", src: "/images/gallery/gal-cinema.jpg", alt: "Old Malayalam cinema projector", caption: "" },
+  { id: "snacks", slot: "g-snacks", tag: "life", src: "/images/gallery/gal-snacks.jpg", alt: "Kattan chaya and pazham pori on a wooden table", caption: "" },
+  { id: "ksrtc", slot: "g-ksrtc", tag: "old", src: "/images/gallery/gal-ksrtc.jpg", alt: "KSRTC bus, Kerala, 1992", caption: "KSRTC — 1992" },
+  { id: "counter", slot: "g-counter", tag: "kada", src: "/images/gallery/gal-counter.jpg", alt: "Kerala tea shop counter with glasses of kattan chaya", caption: "" },
+  { id: "talk", slot: "g-talk", tag: "kada", src: "/images/gallery/gal-talk.jpg", alt: "Conversation at a Kerala chayakada", caption: "" },
+  { id: "cycle", slot: "g-cycle", tag: "life", src: "/images/gallery/gal-cycle.jpg", alt: "Bicycle by a Kerala backwater", caption: "" },
 ];
 
 export const POSTERS = [
