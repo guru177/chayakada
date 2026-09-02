@@ -4,7 +4,8 @@ A vintage Kerala tea-stall ambience mixer — rain, thunder, fire, birds, kada c
 
 Inspired by [kattanchaya.in](https://www.kattanchaya.in/). Ambient layers are synthesized in the browser (Web Audio). Original songs are not streamed.
 
-How the mixer, presets, radio, and audio graph work: **[docs/AMBIENCE.md](docs/AMBIENCE.md)**.
+- How I planned the look in ChatGPT and built this app (teaching guide): **[docs/WORKFLOW.md](docs/WORKFLOW.md)**
+- How the mixer, presets, radio, and audio graph work: **[docs/AMBIENCE.md](docs/AMBIENCE.md)**
 
 ## Run
 
