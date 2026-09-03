@@ -1,4 +1,4 @@
-import { PRESETS, RADIO_TRACKS, SOUND_META, type SoundId } from "../data";
+import { PRESETS, SOUND_META, type SoundId } from "../data";
 import { useAudio } from "../context";
 
 function barsFor(seed: number) {
@@ -41,18 +41,14 @@ export function Mixer() {
 
       <div className="control-row">
         <div className="control-group">
-          <span className="label" style={{ margin: 0 }}>
-            Sleep
-          </span>
-          {[30, 60, 90].map((m) => (
-            <button
-              key={m}
-              className={`timer-pill ${audio.sleepMinutes === m ? "active" : ""}`}
-              onClick={() => audio.setSleep(audio.sleepMinutes === m ? null : m)}
-            >
-              {m}m
-            </button>
-          ))}
+          <button
+            type="button"
+            className={`timer-pill ${audio.ambienceOn ? "" : "active"}`}
+            onClick={() => void audio.toggleAmbience()}
+            aria-pressed={!audio.ambienceOn}
+          >
+            {audio.ambienceOn ? "All off" : "All on"}
+          </button>
         </div>
         <div className="control-group">
           <span className="toggle-label">Vibe</span>
@@ -173,7 +169,7 @@ export function Mixer() {
           </div>
           {audio.playlistOpen && (
             <div className="playlist">
-              {RADIO_TRACKS.map((track, i) => (
+              {audio.playlistTracks.map((track, i) => (
                 <button
                   key={track.id}
                   className={i === audio.trackIndex ? "active" : ""}

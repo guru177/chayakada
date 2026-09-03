@@ -1,5 +1,5 @@
 import type { SoundId, Volumes } from "../data";
-import { AMBIENCE_LOOPS, RADIO_TRACKS } from "../data";
+import { AMBIENCE_LOOPS, radioPlaylist, RADIO_PLAYLISTS } from "../data";
 
 type Layer = {
   gain: GainNode;
@@ -82,6 +82,7 @@ export class AudioEngine {
   private songDest: AudioNode | null = null;
   private ambienceEls = new Map<SoundId, HTMLAudioElement>();
   private trackIndex = 0;
+  private playlistId = RADIO_PLAYLISTS[0].id;
   private shuffled = false;
   private masterValue = 0.85;
   private runId = 0;
@@ -264,6 +265,42 @@ export class AudioEngine {
         lfo.stop();
         lfo.disconnect();
       });
+    } else if (id === "kettle") {
+      const rumble = ctx.createGain();
+      rumble.gain.value = 0.32;
+      rumble.connect(panner);
+      stops.push(loopNoise(ctx, rumble, "brown", { type: "lowpass", freq: 170, q: 0.9 }));
+      const hiss = ctx.createGain();
+      hiss.gain.value = 0.2;
+      hiss.connect(panner);
+      stops.push(loopNoise(ctx, hiss, "white", { type: "highpass", freq: 2600, q: 0.55 }));
+      const steamLfo = ctx.createOscillator();
+      const steamDepth = ctx.createGain();
+      steamLfo.frequency.value = 0.22;
+      steamDepth.gain.value = 0.08;
+      steamLfo.connect(steamDepth);
+      steamDepth.connect(hiss.gain);
+      steamLfo.start();
+      const bubble = ctx.createGain();
+      bubble.gain.value = 0;
+      bubble.connect(panner);
+      stops.push(loopNoise(ctx, bubble, "white", { type: "bandpass", freq: 480, q: 2.8 }));
+      const runId = this.runId;
+      let timer = 0;
+      const simmer = () => {
+        if (!this.playing || !this.ctx || this.runId !== runId) return;
+        const now = this.ctx.currentTime;
+        bubble.gain.setValueAtTime(0, now);
+        bubble.gain.linearRampToValueAtTime(0.28, now + 0.012);
+        bubble.gain.exponentialRampToValueAtTime(0.001, now + 0.09);
+        timer = window.setTimeout(simmer, 70 + Math.random() * 220);
+      };
+      timer = window.setTimeout(simmer, 180);
+      stops.push(() => {
+        clearTimeout(timer);
+        steamLfo.stop();
+        steamLfo.disconnect();
+      });
     }
 
     return {
@@ -314,10 +351,19 @@ export class AudioEngine {
     }
   }
 
+  private tracks() {
+    return radioPlaylist(this.playlistId).tracks;
+  }
+
+  private currentTrack() {
+    const list = this.tracks();
+    return list[this.trackIndex] ?? list[0];
+  }
+
   private startRadio(dest: AudioNode) {
     this.stopRadio();
-    const track = RADIO_TRACKS[this.trackIndex];
-    if (track.src) {
+    const track = this.currentTrack();
+    if (track?.src) {
       this.ensureSong(dest);
       const el = this.songEl!;
       el.src = track.src;
@@ -429,7 +475,7 @@ export class AudioEngine {
       layer.gain.gain.setTargetAtTime(target, now, 0.08);
     });
     const el = this.songEl;
-    const file = Boolean(RADIO_TRACKS[this.trackIndex]?.src);
+    const file = Boolean(this.currentTrack()?.src);
     if (el && file && this.playing) {
       if (volumes.music > 0.02) {
         if (el.paused && el.src) void el.play().catch(() => {});
@@ -474,14 +520,29 @@ export class AudioEngine {
         fire: 0.05,
         birds: 0.45,
         wind: -0.5,
+        kettle: 0.28,
         music: 0,
       };
       layer.panner.pan.setTargetAtTime(on ? spread[id] : 0, this.ctx!.currentTime, 0.12);
     });
   }
 
+  setPlaylist(id: string) {
+    const nextId = radioPlaylist(id).id;
+    if (this.playlistId === nextId) return this.trackIndex;
+    this.playlistId = nextId;
+    this.trackIndex = 0;
+    const music = this.layers.get("music");
+    if (music && this.playing) {
+      this.stopRadio();
+      this.startRadio(music.panner);
+    }
+    return this.trackIndex;
+  }
+
   setTrack(index: number) {
-    this.trackIndex = (index + RADIO_TRACKS.length) % RADIO_TRACKS.length;
+    const len = this.tracks().length;
+    this.trackIndex = len ? (index + len) % len : 0;
     const music = this.layers.get("music");
     if (music && this.playing) {
       this.stopRadio();
@@ -491,10 +552,11 @@ export class AudioEngine {
   }
 
   private otherTrack() {
-    if (RADIO_TRACKS.length < 2) return this.trackIndex;
+    const len = this.tracks().length;
+    if (len < 2) return this.trackIndex;
     let next = this.trackIndex;
     while (next === this.trackIndex) {
-      next = Math.floor(Math.random() * RADIO_TRACKS.length);
+      next = Math.floor(Math.random() * len);
     }
     return next;
   }
@@ -520,7 +582,7 @@ export class AudioEngine {
   }
 
   hasFileTrack() {
-    return Boolean(RADIO_TRACKS[this.trackIndex]?.src);
+    return Boolean(this.currentTrack()?.src);
   }
 
   getDuration() {

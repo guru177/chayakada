@@ -1,6 +1,6 @@
 # Kattan Chaya — ambience mixer
 
-This site is a vintage Kerala tea-shop soundscape. Rain, thunder, fire, birds, wind, kada chatter, and a lo-fi radio are **synthesized in the browser** with the Web Audio API. Original copyrighted songs are not streamed.
+This site is a vintage Kerala tea-shop soundscape. Rain, thunder, fire, birds, wind, kettle, kada chatter, and a lo-fi radio are **synthesized in the browser** with the Web Audio API. Original copyrighted songs are not streamed.
 
 Open **http://localhost:5174/#ambience** (or `/#ambience` on whatever port Vite prints) after `npm run dev`.
 
@@ -16,7 +16,7 @@ Pills along the top load a full mix and start playback:
 | Preset | What you hear |
 | --- | --- |
 | Rain / മഴ | Heavy rain, light thunder and wind |
-| Tea Time / ചായ സമയം | Chatter, birds, a little radio |
+| Tea Time / ചായ സമയം | Chatter, birds, kettle, a little radio |
 | Study / പഠനം | Soft birds, low rain, quiet music |
 | Monsoon / മഴക്കാലം | Rain, thunder, fire, chatter |
 | Night / രാത്രി | Crickets, chatter, low rain |
@@ -34,19 +34,21 @@ Tweaking any knob after a preset leaves that preset (the pill is no longer highl
 **STEREO** is centered. **SPATIAL** pans layers (rain left, birds right, and so on) so the stall feels wider.
 
 ### Sound cards
-Seven layers: Rain, Thunder, Crickets, Chatting, Fireplace, Birds, Wind.
+Eight layers: Rain, Thunder, Crickets, Chatting, Fireplace, Birds, Wind, Kettle.
 
 - Tap the **name/icon** to toggle that layer on (~55%) or off.
 - Drag the **knob** up/down to set volume. Dragging above a whisper also **starts** the engine if it was stopped.
 - The bar visualizer animates only while that layer is audible.
 
 ### Radio (പാട്ടുകൾ)
-Titles are original Malayalam names on **Kada Radio**. If a track has no `src` file, you hear a generated pentatonic loop. If you add a file (see below), play/seek/next use that recording.
+Tabs are **local playlists** (`RADIO_PLAYLISTS` in `src/data.ts`). If a track has no `src` file, you hear a generated pentatonic loop. If you add a file (see below), play/seek/next use that recording.
 
-- **Play / pause** starts or mutes **only the radio**. Rain and the other layers keep going.
-- **Prev / next** change station.
-- **Shuffle** picks a random other station, then keeps next/prev random until you turn it off.
-- **Repeat** replays the current station when it ends. Next still skips.
+- **Playlist tabs** switch **KADA** (Chillhop and Evergreen in one list) or **YouTube**.
+- **YouTube** uses the official embed. The same right-hand **VOL** fader (and **master**) set YouTube loudness so it can sit under rain and kettle. Paste a video or playlist link and press Load. YouTube audio does not go through Vibe / Spatial.
+- **Play / pause** on local playlists starts or mutes **only the kada radio**. Rain and the other layers keep going.
+- **Prev / next** change track in the active playlist.
+- **Shuffle** picks a random other track in that playlist, then keeps next/prev random until you turn it off.
+- **Repeat** replays the current track when it ends. Next still skips.
 - The **vertical slider** is radio volume; moving it up starts playback if needed.
 - The **seek bar** follows the file (or a 5:10 clock for generated radio).
 
@@ -88,6 +90,7 @@ Each sound is a **layer**: generators → stereo panner → layer gain → vibe 
 | Fire | Low pink noise + random white pops |
 | Birds | Short sine glides at random pitches |
 | Wind | Pink noise, slow gain LFO |
+| Kettle | Brown simmer, steam hiss, random bubble pops |
 | Music | Triangle oscillator, delayed, on a scale picked by station |
 
 Volumes in the UI are 0–1. The engine scales ambience to ~0.55 and radio to ~0.35 so the mix does not clip.

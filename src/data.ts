@@ -6,6 +6,7 @@ export type SoundId =
   | "fire"
   | "birds"
   | "wind"
+  | "kettle"
   | "music";
 
 export type Volumes = Record<SoundId, number>;
@@ -21,7 +22,10 @@ export const SOUND_META: Record<
   fire: { ml: "അടുപ്പ്", en: "Fireplace", emoji: "🔥", hue: [196, 92, 42] },
   birds: { ml: "പക്ഷികൾ", en: "Birds", emoji: "🦜", hue: [58, 148, 132] },
   wind: { ml: "കാറ്റ്", en: "Wind", emoji: "🌬️", hue: [120, 140, 160] },
+  kettle: { ml: "കെറ്റിൽ", en: "Kettle", emoji: "🫖", hue: [166, 108, 58] },
 };
+
+export const AMBIENCE_IDS = Object.keys(SOUND_META) as Array<Exclude<SoundId, "music">>;
 
 export const DEFAULT_VOLUMES: Volumes = {
   rain: 0.65,
@@ -31,6 +35,7 @@ export const DEFAULT_VOLUMES: Volumes = {
   fire: 0.55,
   birds: 0.5,
   wind: 0.45,
+  kettle: 0.42,
   music: 0,
 };
 
@@ -54,6 +59,7 @@ export const PRESETS: {
       fire: 0.22,
       birds: 0.05,
       wind: 0.38,
+      kettle: 0.18,
       music: 0.12,
     },
   },
@@ -70,6 +76,7 @@ export const PRESETS: {
       fire: 0.55,
       birds: 0.08,
       wind: 0.32,
+      kettle: 0.28,
       music: 0.22,
     },
   },
@@ -86,6 +93,7 @@ export const PRESETS: {
       fire: 0.35,
       birds: 0.7,
       wind: 0.12,
+      kettle: 0.72,
       music: 0.52,
     },
   },
@@ -102,6 +110,7 @@ export const PRESETS: {
       fire: 0.28,
       birds: 0.72,
       wind: 0.18,
+      kettle: 0.4,
       music: 0.32,
     },
   },
@@ -118,6 +127,7 @@ export const PRESETS: {
       fire: 0.48,
       birds: 0,
       wind: 0.22,
+      kettle: 0.48,
       music: 0.38,
     },
   },
@@ -192,20 +202,36 @@ export type RadioTrack = {
   src?: string;
 };
 
-export const RADIO_TRACKS: RadioTrack[] = [
+export type RadioPlaylist = {
+  id: string;
+  title: string;
+  tracks: RadioTrack[];
+};
+
+export const RADIO_PLAYLISTS: RadioPlaylist[] = [
   {
-    id: "chillhop",
-    title: "Malayalam Chillhop",
-    artist: "Chris Wayne",
-    src: "/audio/songs/malayalam-chillhop.mp3",
-  },
-  {
-    id: "evergreen",
-    title: "Evergreen Hits 80s–90s",
-    artist: "K.J. Yesudas · K.S. Chithra",
-    src: "/audio/songs/evergreen-hits.mp3",
+    id: "kada",
+    title: "KADA",
+    tracks: [
+      {
+        id: "chillhop",
+        title: "Malayalam Chillhop",
+        artist: "Chris Wayne",
+        src: "/audio/songs/malayalam-chillhop.mp3",
+      },
+      {
+        id: "evergreen",
+        title: "Evergreen Hits 80s–90s",
+        artist: "K.J. Yesudas · K.S. Chithra",
+        src: "/audio/songs/evergreen-hits.mp3",
+      },
+    ],
   },
 ];
+
+export function radioPlaylist(id: string): RadioPlaylist {
+  return RADIO_PLAYLISTS.find((p) => p.id === id) ?? RADIO_PLAYLISTS[0];
+}
 
 /** Looping field recordings. `chatting` uses the people/kada crowd take. */
 export const AMBIENCE_LOOPS: Partial<Record<Exclude<SoundId, "music">, string>> = {
@@ -216,6 +242,7 @@ export const AMBIENCE_LOOPS: Partial<Record<Exclude<SoundId, "music">, string>> 
   fire: "/audio/ambience/fire.m4a",
   birds: "/audio/ambience/birds.m4a",
   wind: "/audio/ambience/wind.m4a",
+  kettle: "/audio/ambience/kettle.mp3",
 };
 
 export const ABOUT = [

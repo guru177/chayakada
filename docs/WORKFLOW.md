@@ -2,9 +2,6 @@
 
 This is the workflow used to plan **Kattanchaya** in ChatGPT and then build the live app (Vite + React + TypeScript). Use it to teach others, or to rebuild the same kind of project: a vintage Kerala tea-shop site with a free **chayakada ambience maker**.
 
-Live reference: [guru177.github.io/chayakada](https://guru177.github.io/chayakada/)  
-Inspiration (look, don’t copy assets): [kattanchaya.in](https://www.kattanchaya.in/)
-
 ---
 
 ## What you are making
@@ -275,7 +272,7 @@ In `src/data.ts` define:
 
 - `SoundId`, `DEFAULT_VOLUMES`, `SOUND_META`
 - `PRESETS` (Rain, Tea Time, Study, Monsoon, Night, Today)
-- `RADIO_TRACKS` with local `src`
+- `RADIO_PLAYLISTS` with local `src` per track
 - `AMBIENCE_LOOPS` paths
 - `GALLERY` + filters
 

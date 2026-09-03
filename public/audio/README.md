@@ -1,18 +1,24 @@
 # Local audio files
 
-This mixer does **not** stream songs from kattanchaya.in. Put files you own or have a license for here, then list them in `src/data.ts`.
+This mixer does **not** stream songs from Spotify or kattanchaya.in. Put files you own or have a license for here, then list them in `src/data.ts`.
 
-## Songs (radio)
+## Songs (radio playlists)
 
 1. Copy `.mp3` or `.ogg` files into `public/audio/songs/`.
-2. Add a track in `RADIO_TRACKS`:
+2. Add a playlist (or a track inside one) in `RADIO_PLAYLISTS`:
 
 ```ts
 {
   id: "evening",
-  title: "സന്ധ്യ റേഡിയോ",
-  artist: "Kada Radio",
-  src: "/audio/songs/evening.mp3",
+  title: "Evening",
+  tracks: [
+    {
+      id: "evening-1",
+      title: "സന്ധ്യ റേഡിയോ",
+      artist: "Kada Radio",
+      src: "/audio/songs/evening.mp3",
+    },
+  ],
 }
 ```
 
@@ -31,5 +37,6 @@ These recordings are in `public/audio/ambience/`:
 | Fire | `fire.m4a` |
 | Birds | `birds.m4a` |
 | Wind | `wind.m4a` |
+| Kettle | `kettle.mp3` |
 
 They are wired in `AMBIENCE_LOOPS` in `src/data.ts`. To replace a layer, overwrite the file or change the path. Omit a key to fall back to the synthesized version.

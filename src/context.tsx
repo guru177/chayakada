@@ -1,9 +1,12 @@
 import { createContext, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { engine } from "./audio/engine";
 import {
+  AMBIENCE_IDS,
   DEFAULT_VOLUMES,
   PRESETS,
-  RADIO_TRACKS,
+  RADIO_PLAYLISTS,
+  radioPlaylist,
+  type RadioTrack,
   type SoundId,
   type Volumes,
 } from "./data";
@@ -36,6 +39,10 @@ type AudioApi = {
   setTrack: (index: number) => void;
   shuffle: () => void;
   toggleRadio: () => Promise<void>;
+  muteRadio: () => void;
+  playlistId: string;
+  playlistTracks: RadioTrack[];
+  setPlaylist: (id: string) => void;
   endTrack: () => void;
   seek: (seconds: number) => void;
   getTrackTime: () => number;
@@ -47,6 +54,8 @@ type AudioApi = {
   setMasterVolume: (value: number) => void;
   toggleGroup: (group: "rain" | "asmr" | "songs" | "chatter") => Promise<void>;
   groupOn: Record<"rain" | "asmr" | "songs" | "chatter", boolean>;
+  ambienceOn: boolean;
+  toggleAmbience: () => Promise<void>;
 };
 
 const AudioCtx = createContext<AudioApi | null>(null);
@@ -64,9 +73,11 @@ export function AudioProvider({ children }: { children: ReactNode }) {
   const [trackIndex, setTrackIndex] = useState(0);
   const [playlistOpen, setPlaylistOpen] = useState(false);
   const [masterVolume, setMasterVolumeState] = useState(0.85);
+  const [playlistId, setPlaylistId] = useState(RADIO_PLAYLISTS[0].id);
   const sleepRef = useRef<number | null>(null);
   const volumesRef = useRef(volumes);
   volumesRef.current = volumes;
+  const ambienceSnap = useRef<Volumes | null>(null);
 
   const api = useMemo<AudioApi>(() => {
     const applyFx = () => {
@@ -183,6 +194,12 @@ export function AudioProvider({ children }: { children: ReactNode }) {
         setShuffled((s) => !s);
         setTrackIndex(engine.shuffle());
       },
+      playlistId,
+      playlistTracks: radioPlaylist(playlistId).tracks,
+      setPlaylist: (id: string) => {
+        setPlaylistId(radioPlaylist(id).id);
+        setTrackIndex(engine.setPlaylist(id));
+      },
       toggleRadio: async () => {
         const current = volumesRef.current;
         if (!playing) {
@@ -206,6 +223,14 @@ export function AudioProvider({ children }: { children: ReactNode }) {
         setVolumes(next);
         engine.setVolumes(next);
       },
+      muteRadio: () => {
+        const current = volumesRef.current;
+        if (current.music <= 0) return;
+        const next = { ...current, music: 0 };
+        volumesRef.current = next;
+        setVolumes(next);
+        if (engine.playing) engine.setVolumes(next);
+      },
       endTrack: () => {
         if (repeat) {
           setTrackIndex(engine.setTrack(engine.getTrackIndex()));
@@ -216,9 +241,9 @@ export function AudioProvider({ children }: { children: ReactNode }) {
       seek: (seconds: number) => engine.seek(seconds),
       getTrackTime: () => engine.getCurrentTime(),
       getTrackDuration: () => engine.getDuration(),
-      trackHasFile: Boolean(RADIO_TRACKS[trackIndex]?.src),
-      trackTitle: RADIO_TRACKS[trackIndex].title,
-      trackArtist: RADIO_TRACKS[trackIndex].artist,
+      trackHasFile: Boolean(radioPlaylist(playlistId).tracks[trackIndex]?.src),
+      trackTitle: radioPlaylist(playlistId).tracks[trackIndex]?.title ?? "",
+      trackArtist: radioPlaylist(playlistId).tracks[trackIndex]?.artist ?? "",
       masterVolume,
       setMasterVolume: (value: number) => {
         setMasterVolumeState(value);
@@ -227,7 +252,7 @@ export function AudioProvider({ children }: { children: ReactNode }) {
       toggleGroup: async (group) => {
         const map = {
           rain: ["rain", "thunder", "wind"] as SoundId[],
-          asmr: ["fire", "crickets", "birds"] as SoundId[],
+          asmr: ["fire", "crickets", "birds", "kettle"] as SoundId[],
           songs: ["music"] as SoundId[],
           chatter: ["chatting"] as SoundId[],
         };
@@ -245,12 +270,40 @@ export function AudioProvider({ children }: { children: ReactNode }) {
       },
       groupOn: {
         rain: volumes.rain > 0.04 || volumes.thunder > 0.04 || volumes.wind > 0.04,
-        asmr: volumes.fire > 0.04 || volumes.crickets > 0.04 || volumes.birds > 0.04,
+        asmr: volumes.fire > 0.04 || volumes.crickets > 0.04 || volumes.birds > 0.04 || volumes.kettle > 0.04,
         songs: volumes.music > 0.04,
         chatter: volumes.chatting > 0.04,
       },
+      ambienceOn: AMBIENCE_IDS.some((id) => volumes[id] > 0.02),
+      toggleAmbience: async () => {
+        const current = volumesRef.current;
+        const anyOn = AMBIENCE_IDS.some((id) => current[id] > 0.02);
+        const next = { ...current };
+        if (anyOn) {
+          ambienceSnap.current = { ...current };
+          AMBIENCE_IDS.forEach((id) => {
+            next[id] = 0;
+          });
+        } else {
+          const snap = ambienceSnap.current ?? DEFAULT_VOLUMES;
+          AMBIENCE_IDS.forEach((id) => {
+            next[id] = snap[id] > 0.02 ? snap[id] : DEFAULT_VOLUMES[id];
+          });
+        }
+        volumesRef.current = next;
+        setVolumes(next);
+        setPresetId(null);
+        const shouldPlay = AMBIENCE_IDS.some((id) => next[id] > 0.04) || next.music > 0.04;
+        if (shouldPlay && !engine.playing) {
+          await engine.start(next);
+          applyFx();
+          setPlaying(true);
+          return;
+        }
+        if (engine.playing) engine.setVolumes(next);
+      },
     };
-  }, [playing, volumes, vibe, spatial, presetId, sleepUntil, sleepMinutes, trackIndex, playlistOpen, masterVolume, shuffled, repeat]);
+  }, [playing, volumes, vibe, spatial, presetId, sleepUntil, sleepMinutes, trackIndex, playlistOpen, masterVolume, shuffled, repeat, playlistId]);
 
   const repeatRef = useRef(repeat);
   repeatRef.current = repeat;
