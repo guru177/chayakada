@@ -112,40 +112,127 @@ export const YOUTUBE_SUGGESTIONS = [
   "Kerala rain",
 ];
 
+const VIDEO_ID = /^[\w-]{11}$/;
+
+function youtubeThumb(id: string) {
+  return `https://i.ytimg.com/vi/${id}/mqdefault.jpg`;
+}
+
+async function searchViaDataApi(q: string): Promise<YoutubeHit[]> {
+  const key = import.meta.env.VITE_YOUTUBE_API_KEY;
+  if (!key) return [];
+  const url = new URL("https://www.googleapis.com/youtube/v3/search");
+  url.searchParams.set("part", "snippet");
+  url.searchParams.set("type", "video");
+  url.searchParams.set("maxResults", "8");
+  url.searchParams.set("q", q);
+  url.searchParams.set("key", key);
+  const res = await fetch(url);
+  if (!res.ok) return [];
+  const data = (await res.json()) as {
+    items?: Array<{
+      id?: { videoId?: string };
+      snippet?: { title?: string; channelTitle?: string; thumbnails?: { medium?: { url?: string } } };
+    }>;
+  };
+  return (data.items || [])
+    .map((item) => {
+      const id = item.id?.videoId;
+      if (!id || !VIDEO_ID.test(id)) return null;
+      return {
+        id,
+        title: item.snippet?.title || "YouTube",
+        channel: item.snippet?.channelTitle || "",
+        thumb: item.snippet?.thumbnails?.medium?.url || youtubeThumb(id),
+      };
+    })
+    .filter((hit): hit is YoutubeHit => Boolean(hit));
+}
+
+async function searchViaLocalPlugin(q: string): Promise<YoutubeHit[]> {
+  try {
+    const res = await fetch(`/api/yt-search?q=${encodeURIComponent(q)}`, {
+      signal: AbortSignal.timeout(8000),
+    });
+    if (!res.ok) return [];
+    const data = (await res.json()) as YoutubeHit[];
+    if (!Array.isArray(data)) return [];
+    return data.filter((hit) => hit?.id && VIDEO_ID.test(hit.id)).slice(0, 8);
+  } catch {
+    return [];
+  }
+}
+
+const PUBLIC_SEARCH_APIS = [
+  "https://invidious.materialio.us/api/v1/search",
+  "https://invidious.flokinet.to/api/v1/search",
+];
+
+function parseJsonArray(text: string): unknown[] | null {
+  const start = text.indexOf("[");
+  const end = text.lastIndexOf("]");
+  const chunks = start >= 0 && end > start ? [text.slice(start, end + 1), text.trim()] : [text.trim()];
+  for (const chunk of chunks) {
+    try {
+      const data = JSON.parse(chunk) as unknown;
+      if (Array.isArray(data)) return data;
+    } catch {
+      /* next */
+    }
+  }
+  return null;
+}
+
+function hitsFromIndexPayload(text: string): YoutubeHit[] {
+  const rows = parseJsonArray(text);
+  if (!rows) return [];
+  const hits: YoutubeHit[] = [];
+  const seen = new Set<string>();
+  for (const row of rows) {
+    if (!row || typeof row !== "object") continue;
+    const item = row as Record<string, unknown>;
+    if (item.type && item.type !== "video") continue;
+    const id = String(item.videoId || "");
+    if (!VIDEO_ID.test(id) || seen.has(id)) continue;
+    seen.add(id);
+    hits.push({
+      id,
+      title: String(item.title || "YouTube"),
+      channel: String(item.author || ""),
+      thumb: youtubeThumb(id),
+    });
+    if (hits.length >= 8) break;
+  }
+  return hits;
+}
+
+async function searchViaPublicIndex(q: string): Promise<YoutubeHit[]> {
+  for (const api of PUBLIC_SEARCH_APIS) {
+    const target = `${api}?q=${encodeURIComponent(q)}&type=video`;
+    try {
+      const res = await fetch(`https://r.jina.ai/${target}`, {
+        signal: AbortSignal.timeout(12000),
+        headers: { Accept: "application/json, text/plain, */*" },
+      });
+      const hits = hitsFromIndexPayload(await res.text());
+      if (hits.length) return hits;
+    } catch {
+      /* next host */
+    }
+  }
+  return [];
+}
+
 export async function searchYoutubeVideos(query: string): Promise<YoutubeHit[]> {
   const q = query.trim();
   if (!q) return [];
-  const key = import.meta.env.VITE_YOUTUBE_API_KEY;
-  if (key) {
-    const url = new URL("https://www.googleapis.com/youtube/v3/search");
-    url.searchParams.set("part", "snippet");
-    url.searchParams.set("type", "video");
-    url.searchParams.set("maxResults", "8");
-    url.searchParams.set("q", q);
-    url.searchParams.set("key", key);
-    const res = await fetch(url);
-    if (res.ok) {
-      const data = (await res.json()) as {
-        items?: Array<{ id?: { videoId?: string }; snippet?: { title?: string; channelTitle?: string; thumbnails?: { medium?: { url?: string } } } }>;
-      };
-      const hits = (data.items || [])
-        .map((item) => {
-          const id = item.id?.videoId;
-          if (!id) return null;
-          return {
-            id,
-            title: item.snippet?.title || "YouTube",
-            channel: item.snippet?.channelTitle || "",
-            thumb: item.snippet?.thumbnails?.medium?.url || `https://i.ytimg.com/vi/${id}/mqdefault.jpg`,
-          };
-        })
-        .filter((hit): hit is YoutubeHit => Boolean(hit));
-      if (hits.length) return hits;
-    }
-  }
-  const res = await fetch(`/api/yt-search?q=${encodeURIComponent(q)}`);
-  if (!res.ok) throw new Error("search failed");
-  return (await res.json()) as YoutubeHit[];
+  const official = await searchViaDataApi(q);
+  if (official.length) return official;
+  const local = await searchViaLocalPlugin(q);
+  if (local.length) return local;
+  const remote = await searchViaPublicIndex(q);
+  if (remote.length) return remote;
+  throw new Error("search failed");
 }
 
 export function youtubeVolumePercent(radio: number, master: number) {
